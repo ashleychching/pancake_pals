@@ -337,12 +337,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    child: Container(
-                      padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.8),
-                      ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -426,8 +422,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
+          color: Colors.brown.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(18),
         ),
         child: Icon(icon, color: Colors.white, size: 24),
       ),
