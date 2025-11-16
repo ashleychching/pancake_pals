@@ -294,6 +294,34 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+// Partner Model
+class Partner {
+  final String imagePath;
+  final String name;
+  final String description;
+  final Color backgroundColor;
+  final Color accentColor;
+
+  Partner({
+    required this.imagePath,
+    required this.name,
+    required this.description,
+    required this.backgroundColor,
+    required this.accentColor,
+  });
+}
+
+// Map Model
+class MapData {
+  final String imagePath;
+  final String name;
+
+  MapData({
+    required this.imagePath,
+    required this.name,
+  });
+}
+
 // Stats Page (Empty for now)
 class StatsPage extends StatelessWidget {
   const StatsPage({super.key});
@@ -321,9 +349,70 @@ class StatsPage extends StatelessWidget {
   }
 }
 
-// Shop Page
-class ShopPage extends StatelessWidget {
+// Shop Page with Cycling
+class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
+
+  @override
+  State<ShopPage> createState() => _ShopPageState();
+}
+
+class _ShopPageState extends State<ShopPage> {
+  int currentPartnerIndex = 0;
+  int currentMapIndex = 0;
+
+  final List<Partner> partners = [
+    Partner(
+      imagePath: 'assets/character-toast.png',
+      name: 'Toastie',
+      description: 'Toastie is a hard-working and diligent piece of bread, always looking for the next condiment to spread.',
+      backgroundColor: const Color(0xFFFFF9E6),
+      accentColor: const Color(0xFFC8E6C9),
+    ),
+    Partner(
+      imagePath: 'assets/character-bagel.png',
+      name: 'Bagel',
+      description: 'Bagel is a cheerful and round friend who loves rolling around and making everyone smile.',
+      backgroundColor: const Color(0xFFFFE5CC),
+      accentColor: const Color(0xFFB3E5FC),
+    ),
+    Partner(
+      imagePath: 'assets/character-croissant.png',
+      name: 'Croissant',
+      description: 'Croissant is elegant and flaky, always adding a touch of sophistication to any bakery.',
+      backgroundColor: const Color(0xFFFFF4E0),
+      accentColor: const Color(0xFFFFCCBC),
+    ),
+  ];
+
+  final List<MapData> maps = [
+    MapData(
+      imagePath: 'assets/summer_path.png',
+      name: 'Summer Path',
+    ),
+    MapData(
+      imagePath: 'assets/winter_path.png',
+      name: 'Winter Path',
+    ),
+    MapData(
+      imagePath: 'assets/autumn_path.png',
+      name: 'Autumn Path',
+    ),
+  ];
+
+  void nextPartner() {
+    setState(() {
+      currentPartnerIndex = (currentPartnerIndex + 1) % partners.length;
+    });
+    print('Next partner: ${partners[currentPartnerIndex].name}');
+  }
+
+  void nextMap() {
+    setState(() {
+      currentMapIndex = (currentMapIndex + 1) % maps.length;
+    });
+    print('Next map: ${maps[currentMapIndex].name}');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -340,21 +429,27 @@ class ShopPage extends StatelessWidget {
           ),
         ),
         elevation: 0,
-        leading: IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF4A3428),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.arrow_back,
-              color: Color(0xFFE8E4D0),
-              size: 20,
+        automaticallyImplyLeading: false,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: IconButton(
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF4A3428),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: Color(0xFFE8E4D0),
+                  size: 20,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
             ),
           ),
-          onPressed: () => Navigator.pop(context),
-        ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -362,7 +457,6 @@ class ShopPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Partners Section
               const Text(
                 'Partners',
                 style: TextStyle(
@@ -372,18 +466,12 @@ class ShopPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-
-              // Partner Card
               _buildPartnerCard(
-                name: 'Toastie',
-                description: 'Toastie is a hard-working and diligent piece of bread, always looking for the next condiment to spread.',
-                backgroundColor: const Color(0xFFFFF9E6),
-                accentColor: const Color(0xFFC8E6C9),
+                context,
+                partner: partners[currentPartnerIndex],
+                onNext: nextPartner,
               ),
-
               const SizedBox(height: 30),
-
-              // Map Section
               const Text(
                 'Map',
                 style: TextStyle(
@@ -393,44 +481,12 @@ class ShopPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-
-              // Map Card
-              Container(
-                height: 120,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  image: const DecorationImage(
-                    image: AssetImage('assets/summer_path.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      right: 12,
-                      top: 0,
-                      bottom: 0,
-                      child: Center(
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.arrow_forward,
-                            color: Color(0xFF4A3428),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              _buildMapCard(
+                context,
+                map: maps[currentMapIndex],
+                onNext: nextMap,
               ),
-
               const SizedBox(height: 30),
-
-              // Achievements Section
               const Text(
                 'Achievements',
                 style: TextStyle(
@@ -440,8 +496,6 @@ class ShopPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-
-              // Achievements Grid
               GridView.count(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -449,12 +503,12 @@ class ShopPage extends StatelessWidget {
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
                 children: [
-                  _buildAchievementBadge(true, '1 Day Streak'),
-                  _buildAchievementBadge(true, '3 Day Streak'),
-                  _buildAchievementBadge(false, '7 Day Streak'),
-                  _buildAchievementBadge(true, '14 Day Streak'),
-                  _buildAchievementBadge(false, '30 Day Streak'),
-                  _buildAchievementBadge(false, '60 Day Streak'),
+                  _buildAchievementBadge(true, 'assets/badge-earlyRiser.png'),
+                  _buildAchievementBadge(true, 'assets/badge-onARoll.png'),
+                  _buildAchievementBadge(false, 'assets/badge-earlyRiser.png'),
+                  _buildAchievementBadge(true, 'assets/badge-onARoll.png'),
+                  _buildAchievementBadge(false, 'assets/badge-earlyRiser.png'),
+                  _buildAchievementBadge(false, 'assets/badge-onARoll.png'),
                 ],
               ),
             ],
@@ -464,44 +518,52 @@ class ShopPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPartnerCard({
-    required String name,
-    required String description,
-    required Color backgroundColor,
-    required Color accentColor,
-  }) {
+  Widget _buildPartnerCard(
+      BuildContext context, {
+        required Partner partner,
+        required VoidCallback onNext,
+      }) {
     return Container(
+      height: 140,
       decoration: BoxDecoration(
-        color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
-          // Character Image
           Container(
-            width: 120,
-            height: 120,
-            margin: const EdgeInsets.all(12),
+            width: 140,
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF3D0),
-              borderRadius: BorderRadius.circular(8),
+              color: partner.backgroundColor,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                bottomLeft: Radius.circular(12),
+              ),
             ),
-            child: const Center(
-              child: Text(
-                '🍞',
-                style: TextStyle(fontSize: 60),
+            child: Center(
+              child: Image.asset(
+                partner.imagePath,
+                width: 100,
+                height: 100,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Icon(
+                    Icons.image,
+                    size: 60,
+                    color: Color(0xFFD4CDB8),
+                  );
+                },
               ),
             ),
           ),
-
-          // Description
           Expanded(
             child: Container(
               padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(right: 8),
               decoration: BoxDecoration(
-                color: accentColor,
-                borderRadius: BorderRadius.circular(8),
+                color: partner.accentColor,
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
+                ),
               ),
               child: Stack(
                 children: [
@@ -509,7 +571,7 @@ class ShopPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        name,
+                        partner.name,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -517,12 +579,14 @@ class ShopPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        description,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF4A3428),
-                          height: 1.3,
+                      Expanded(
+                        child: Text(
+                          partner.description,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF4A3428),
+                            height: 1.3,
+                          ),
                         ),
                       ),
                     ],
@@ -530,16 +594,20 @@ class ShopPage extends StatelessWidget {
                   Positioned(
                     right: 0,
                     bottom: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.arrow_forward,
-                        size: 16,
-                        color: Color(0xFF4A3428),
+                    child: GestureDetector(
+                      onTap: onNext,
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.9),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_forward,
+                          size: 20,
+                          color: Color(0xFF4A3428),
+                        ),
                       ),
                     ),
                   ),
@@ -552,39 +620,77 @@ class ShopPage extends StatelessWidget {
     );
   }
 
-  Widget _buildAchievementBadge(bool unlocked, String label) {
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: unlocked ? const Color(0xFF8B6F47) : const Color(0xFFD4CDB8),
-          width: 6,
+  Widget _buildMapCard(
+      BuildContext context, {
+        required MapData map,
+        required VoidCallback onNext,
+      }) {
+    return GestureDetector(
+      onTap: onNext,
+      child: Container(
+        height: 120,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          image: DecorationImage(
+            image: AssetImage(map.imagePath),
+            fit: BoxFit.cover,
+            onError: (exception, stackTrace) {
+              print('Error loading map image: ${map.imagePath}');
+            },
+          ),
         ),
-        color: unlocked ? const Color(0xFFD4A574) : const Color(0xFFF5F0E1),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
           children: [
-            Text(
-              unlocked ? '🥞' : '🥞',
-              style: TextStyle(
-                fontSize: 32,
-                color: unlocked ? Colors.black : Colors.black.withOpacity(0.3),
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 8,
-                fontWeight: FontWeight.bold,
-                color: unlocked ? const Color(0xFF4A3428) : const Color(0xFFB8B0A0),
+            Positioned(
+              right: 12,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.arrow_forward,
+                    color: Color(0xFF4A3428),
+                    size: 20,
+                  ),
+                ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAchievementBadge(bool unlocked, String imagePath) {
+    return ClipOval(
+      child: Image.asset(
+        imagePath,
+        fit: BoxFit.cover,
+        color: unlocked ? null : Colors.white.withOpacity(0.6),
+        colorBlendMode: unlocked ? null : BlendMode.lighten,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: unlocked ? const Color(0xFFD4A574) : const Color(0xFFF5F0E1),
+            ),
+            child: Center(
+              child: Icon(
+                Icons.emoji_events,
+                size: 40,
+                color: unlocked
+                    ? const Color(0xFF4A3428)
+                    : const Color(0xFFB8B0A0),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
