@@ -391,27 +391,269 @@ class StatsPage extends StatelessWidget {
   }
 }
 
-// Shop Page (Empty for now)
+// Shop Page
 class ShopPage extends StatelessWidget {
   const ShopPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: const Color(0xFFE8E4D0),
       appBar: AppBar(
-        backgroundColor: Colors.black.withOpacity(0.8),
-        foregroundColor: Colors.white,
-        title: const Text('Shop'),
-        elevation: 0,
-      ),
-      body: const Center(
-        child: Text(
-          'Shop Page',
+        backgroundColor: const Color(0xFFE8E4D0),
+        foregroundColor: const Color(0xFF4A3428),
+        title: const Text(
+          'Bakery Shop',
           style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
           ),
+        ),
+        elevation: 0,
+        leading: IconButton(
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF4A3428),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.arrow_back,
+              color: Color(0xFFE8E4D0),
+              size: 20,
+            ),
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Partners Section
+              const Text(
+                'Partners',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4A3428),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Partner Card
+              _buildPartnerCard(
+                name: 'Toastie',
+                description: 'Toastie is a hard-working and diligent piece of bread, always looking for the next condiment to spread.',
+                backgroundColor: const Color(0xFFFFF9E6),
+                accentColor: const Color(0xFFC8E6C9),
+              ),
+
+              const SizedBox(height: 30),
+
+              // Map Section
+              const Text(
+                'Map',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4A3428),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Map Card
+              Container(
+                height: 120,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  image: const DecorationImage(
+                    image: AssetImage('assets/summer_path.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      right: 12,
+                      top: 0,
+                      bottom: 0,
+                      child: Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.9),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.arrow_forward,
+                            color: Color(0xFF4A3428),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              // Achievements Section
+              const Text(
+                'Achievements',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4A3428),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Achievements Grid
+              GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 3,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                children: [
+                  _buildAchievementBadge(true, '1 Day Streak'),
+                  _buildAchievementBadge(true, '3 Day Streak'),
+                  _buildAchievementBadge(false, '7 Day Streak'),
+                  _buildAchievementBadge(true, '14 Day Streak'),
+                  _buildAchievementBadge(false, '30 Day Streak'),
+                  _buildAchievementBadge(false, '60 Day Streak'),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPartnerCard({
+    required String name,
+    required String description,
+    required Color backgroundColor,
+    required Color accentColor,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          // Character Image
+          Container(
+            width: 120,
+            height: 120,
+            margin: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF3D0),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Center(
+              child: Text(
+                '🍞',
+                style: TextStyle(fontSize: 60),
+              ),
+            ),
+          ),
+
+          // Description
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.only(right: 8),
+              decoration: BoxDecoration(
+                color: accentColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Stack(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF4A3428),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        description,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF4A3428),
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.8),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.arrow_forward,
+                        size: 16,
+                        color: Color(0xFF4A3428),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAchievementBadge(bool unlocked, String label) {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: unlocked ? const Color(0xFF8B6F47) : const Color(0xFFD4CDB8),
+          width: 6,
+        ),
+        color: unlocked ? const Color(0xFFD4A574) : const Color(0xFFF5F0E1),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              unlocked ? '🥞' : '🥞',
+              style: TextStyle(
+                fontSize: 32,
+                color: unlocked ? Colors.black : Colors.black.withOpacity(0.3),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 8,
+                fontWeight: FontWeight.bold,
+                color: unlocked ? const Color(0xFF4A3428) : const Color(0xFFB8B0A0),
+              ),
+            ),
+          ],
         ),
       ),
     );
