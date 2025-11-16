@@ -28,6 +28,23 @@ class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
+List<Map<String, dynamic>> demoFriends = [
+  {
+    "name": "toastie",
+    "tag": "4433",
+    "avatar": "assets/character-toast.png"
+  },
+  {
+    "name": "eggystan",
+    "tag": "2211",
+    "avatar": "assets/character-egg.png"
+  },
+  {
+    "name": "wafflequeen",
+    "tag": "9910",
+    "avatar": "assets/character-waffle.png"
+  },
+];
 
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   Duration _screenTime = Duration.zero;
@@ -165,6 +182,62 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     return (dayTime - screenTime) / 1440.0;
   }
 
+  Widget buildFriendItem(String avatarPath, String name, String tag) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: Color(0xFFEBF5DF), // Outer background mint
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+        decoration: BoxDecoration(
+          color: Color(0xFFEDB458), // Inner bar golden color
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          children: [
+            // Avatar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                avatarPath,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 15),
+
+            // Name + tag
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  tag,
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -197,7 +270,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                       image: DecorationImage(
                         image: AssetImage(maps[currentMapIndex].imagePath),
                         fit: BoxFit.cover,
-                        alignment: Alignment.center,
+                        alignment: const Alignment(0.23, 0),
                       ),
                     ),
                     child: Container(
@@ -359,71 +432,150 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 
   void _showAddFriendsModal(BuildContext context) {
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.7,
-          decoration: BoxDecoration(
-            color: Colors.grey[900],
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(25),
-              topRight: Radius.circular(25),
-            ),
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-          child: Column(
-            children: [
-              // Handle bar
-              Container(
-                margin: const EdgeInsets.only(top: 12, bottom: 8),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[600],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              // Title
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Add Friends',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white),
-                      onPressed: () {
-                        Navigator.pop(context, {
-                          'partnerIndex': currentPartnerIndex,
-                          'mapIndex': currentMapIndex,
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              // Content - Empty for now
-              Expanded(
-                child: Center(
-                  child: Text(
-                    'Add Friends Content Here',
-                    style: TextStyle(
-                      color: Colors.grey[400],
-                      fontSize: 16,
-                    ),
+          child: Container(
+            width: 350,
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Color(0xFFF4F4BB),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                // Title
+                Text(
+                  "Add Friends",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-            ],
+
+                SizedBox(height: 20),
+
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: "Search users...",
+                    hintStyle: TextStyle(color: Colors.black54),
+
+                    // Background color
+                    filled: true,
+                    fillColor: Color(0xFFBAD4AA), // your soft green 🍃
+
+                    // Search Icon Left
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Image.asset(
+                        "assets/Search.png",
+                        width: 20,
+                        height: 20,
+                      ),
+                    ),
+
+                    // Border + rounded corners
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
+
+                    contentPadding: EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+
+
+                SizedBox(height: 20),
+
+                SizedBox(
+                  height: 250,
+                  child: ListView.builder(
+                    itemCount: demoFriends.length,
+                    itemBuilder: (context, index) {
+                      final friend = demoFriends[index];
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Stack(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xFFEDB458), // full orange card
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              padding: const EdgeInsets.only(left: 80, right: 16, top: 16, bottom: 16),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "${friend['name']}#${friend['tag']}",
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            Positioned(
+                              left: 0,
+                              top: 0,
+                              bottom: 0,
+                              child: Container(
+                                width: 70,
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFEBF5DF), // the light green box
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(14),
+                                    bottomLeft: Radius.circular(14),
+                                  ),
+                                ),
+                                padding: const EdgeInsets.all(8),
+                                child: Image.asset(
+                                  friend['avatar'], // PNG file
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+
+                            Positioned(
+                              right: 12,
+                              top: 12,
+                              child: GestureDetector(
+                                onTap: () => print("Added ${friend['name']}"),
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(
+                                    Icons.person_add_alt_1,
+                                    size: 20,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                )
+              ],
+            ),
           ),
         );
       },
