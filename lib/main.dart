@@ -269,7 +269,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                       image: DecorationImage(
                         image: AssetImage(maps[currentMapIndex].imagePath),
                         fit: BoxFit.cover,
-                        alignment: Alignment.center,
+                        alignment: const Alignment(0.23, 0),
                       ),
                     ),
                     child: Container(
