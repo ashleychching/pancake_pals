@@ -8,32 +8,29 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Screen Time Tracker',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
-  int _counter = 0;
+class _MyHomePageState extends State<MyHomePage> {
   Duration _screenTime = Duration.zero;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -42,80 +39,275 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   Future<void> _getScreenTimeToday() async {
+    setState(() => _isLoading = true);
+
     final now = DateTime.now();
     final startOfDay = DateTime(now.year, now.month, now.day);
 
-    // Check permission
     bool granted = await UsageStats.checkUsagePermission() ?? false;
     if (!granted) {
       await UsageStats.grantUsagePermission();
-      // The user must manually grant permission in settings
+      setState(() => _isLoading = false);
+      return;
     }
 
     List<UsageInfo> usage = await UsageStats.queryUsageStats(startOfDay, now);
-
     int totalMillis = 0;
 
     for (var info in usage) {
       final obj = info.totalTimeInForeground;
-      int time = 0;
-
       if (obj != null) {
         final str = obj.toString();
-        time = int.tryParse(str) ?? 0;
+        totalMillis += int.tryParse(str) ?? 0;
       }
-
-      totalMillis += time;
     }
-
 
     setState(() {
       _screenTime = Duration(milliseconds: totalMillis);
-    });
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
+      _isLoading = false;
     });
   }
 
   String get formattedScreenTime {
     final hours = _screenTime.inHours;
     final minutes = _screenTime.inMinutes % 60;
-    final seconds = _screenTime.inSeconds % 60;
-    return '${hours}h ${minutes}m ${seconds}s';
+    return '${hours} HR ${minutes} Min';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+      backgroundColor: Colors.grey[900],
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Stack(
+        children: [
+          // Main content with background image
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/forest_path.png'), // Add your image to assets
+                fit: BoxFit.cover,
+                alignment: Alignment.center,
+              ),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.3),
+                    Colors.black.withOpacity(0.6),
+                  ],
+                ),
+              ),
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Screen Time Display
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Column(
+                          children: [
+                            const Text(
+                              'Screen Time',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            Text(
+                              formattedScreenTime,
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Bottom Navigation Bar
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Add Friends Button (Left)
+                  _buildNavButton(
+                    icon: Icons.person_add,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AddFriendsPage(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  // Right side buttons
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Stats Button
+                      _buildNavButton(
+                        icon: Icons.bar_chart,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const StatsPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 15),
+
+                      // Shop Button
+                      _buildNavButton(
+                        icon: Icons.shopping_bag,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ShopPage(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Screen time today: $formattedScreenTime',
-              style: Theme.of(context).textTheme.titleMedium,
-              textAlign: TextAlign.center,
-            ),
-          ],
+    );
+  }
+
+  Widget _buildNavButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, color: Colors.white, size: 24),
+      ),
+    );
+  }
+}
+
+// Add Friends Page (Empty for now)
+class AddFriendsPage extends StatelessWidget {
+  const AddFriendsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[900],
+      appBar: AppBar(
+        backgroundColor: Colors.black.withOpacity(0.8),
+        foregroundColor: Colors.white,
+        title: const Text('Add Friends'),
+        elevation: 0,
+      ),
+      body: const Center(
+        child: Text(
+          'Add Friends Page',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+    );
+  }
+}
+
+// Stats Page (Empty for now)
+class StatsPage extends StatelessWidget {
+  const StatsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[900],
+      appBar: AppBar(
+        backgroundColor: Colors.black.withOpacity(0.8),
+        foregroundColor: Colors.white,
+        title: const Text('Stats'),
+        elevation: 0,
+      ),
+      body: const Center(
+        child: Text(
+          'Stats Page',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Shop Page (Empty for now)
+class ShopPage extends StatelessWidget {
+  const ShopPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[900],
+      appBar: AppBar(
+        backgroundColor: Colors.black.withOpacity(0.8),
+        foregroundColor: Colors.white,
+        title: const Text('Shop'),
+        elevation: 0,
+      ),
+      body: const Center(
+        child: Text(
+          'Shop Page',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+          ),
+        ),
       ),
     );
   }
