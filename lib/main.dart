@@ -88,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
             height: double.infinity,
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/forest_path.png'), // Add your image to assets
+                image: AssetImage('assets/summer_path.png'), // Add your image to assets
                 fit: BoxFit.cover,
                 alignment: Alignment.center,
               ),
