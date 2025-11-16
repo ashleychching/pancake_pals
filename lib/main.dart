@@ -785,7 +785,7 @@ class _StatsPageState extends State<StatsPage> {
                 print('Error loading pancake stack: $error');
                 return Container(
                   height: 200,
-                  width: 270,
+                  width: 250,
                   color: const Color(0xFFD4A574),
                   child: const Center(
                     child: Text('Podium Image'),
@@ -882,9 +882,9 @@ class _StatsPageState extends State<StatsPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildLeaderboardItem(1, 'TOASTYTOASTIE', '14 hrs 19 min', 'assets/character-toast.png', true),
-        const SizedBox(height: 8),
+        const SizedBox(height: 23),
         _buildLeaderboardItem(2, 'EGGY', '19 hrs 35 min', 'assets/character-egg.png', false),
-        const SizedBox(height: 8),
+        const SizedBox(height: 23),
         _buildLeaderboardItem(3, 'SARAH', '35 hrs 11 min', 'assets/character-strawberry.png', false),
       ],
     );
