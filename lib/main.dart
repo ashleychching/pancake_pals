@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:usage_stats/usage_stats.dart';
-// NO extra imports needed
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +16,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(), // CHANGED: ensure not const if you later use mutable state (kept const here; still fine)
+      home: const MyHomePage(),
     );
   }
 }
@@ -45,23 +44,23 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
+    _getScreenTimeToday();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final size = MediaQuery.of(context).size;
+      final size = MediaQuery
+          .of(context)
+          .size;
 
       _toastPath = Path()
         ..moveTo(size.width * 0.55, size.height * 0.10)
-        ..lineTo(size.width * 0.75, size.height * 0.25)
-        ..lineTo(size.width * 0.20, size.height * 0.35)
-        ..lineTo(size.width * 0.18, size.height * 0.48)
-        ..lineTo(size.width * 0.55, size.height * 0.62)
-        ..lineTo(size.width * 0.52, size.height * 0.69)
-        ..lineTo(size.width * 0.20, size.height * 0.85);
-
+        ..lineTo(size.width * 0.75, size.height * 0.25)..lineTo(
+            size.width * 0.20, size.height * 0.35)..lineTo(
+            size.width * 0.18, size.height * 0.48)..lineTo(
+            size.width * 0.55, size.height * 0.62)..lineTo(
+            size.width * 0.52, size.height * 0.69)..lineTo(
+            size.width * 0.20, size.height * 0.85);
       setState(() {});
     });
-
-    _getScreenTimeToday();
   }
 
   @override
@@ -76,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     final now = DateTime.now();
     final startOfDay = DateTime(now.year, now.month, now.day);
 
-    bool granted = (await UsageStats.checkUsagePermission()) ?? false;
+    bool granted = await UsageStats.checkUsagePermission() ?? false;
     if (!granted) {
       await UsageStats.grantUsagePermission();
       setState(() => _isLoading = false);
@@ -111,161 +110,169 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     return Scaffold(
       backgroundColor: Colors.grey[900],
       body: Builder(
-          builder: (context) {
-      if (_isLoading) {
-        return const Center(child: CircularProgressIndicator());
-      }
+        builder: (context) {
+          if (_isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-      if (_toastPath == null) {
-        return const SizedBox();
-      }
+          if (_toastPath == null) {
+            return const SizedBox();
+          }
 
-      return AnimatedBuilder(
-        animation: _progress,
-        builder: (context, _) {
-          final size = MediaQuery
-              .of(context)
-              .size;
-          final pos = getPointOnFlutterPath(_toastPath!, _progress.value);
+          return AnimatedBuilder(
+            animation: _progress,
+            builder: (context, _) {
+              final size = MediaQuery
+                  .of(context)
+                  .size;
+              final pos = getPointOnFlutterPath(_toastPath!, _progress.value);
 
 
-          return Stack(
-            children: [
-              Container(
-                width: double.infinity,
-                height: double.infinity,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/forest_path.png'),
-                    fit: BoxFit.cover,
-                    alignment: Alignment.center,
-                  ),
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.black.withOpacity(0.1),
-                        Colors.black.withOpacity(0.2),
-                      ],
+              return Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/summer_path.png'),
+                        fit: BoxFit.cover,
+                        alignment: Alignment.center,
+                      ),
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.1),
+                            Colors.black.withOpacity(0.2),
+                          ],
+                        ),
+                      ),
+                      child: SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.9),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Column(
+                                  children: [
+                                    const Text(
+                                      'Screen Time',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                    Text(
+                                      formattedScreenTime,
+                                      style: const TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  Positioned(
+                    left: pos.dx, // center-ish horizontally
+                    top: pos.dy,
+                    child: Image.asset(
+                      'assets/toast_asset.png',
+                      width: 66,
+                      height: 66,
+                    ),
+                  ),
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.9),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Column(
-                              children: [
-                                const Text(
-                                  'Screen Time',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                                Text(
-                                  formattedScreenTime,
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          // Add Friends Button (Left)
+                          _buildNavButton(
+                            icon: Icons.person_add,
+                            onTap: () {
+                              _showAddFriendsModal(context);
+                            },
+                          ),
+
+                          // Right side buttons
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Stats Button
+                              _buildNavButton(
+                                icon: Icons.bar_chart,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const StatsPage(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(width: 15),
+
+                              // Shop Button
+                              _buildNavButton(
+                                icon: Icons.shopping_bag,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const ShopPage(),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
-              ),
-              Positioned(
-                left: pos.dx, // center-ish horizontally
-                top: pos.dy,
-                child: Image.asset(
-                  'assets/toast_asset.png',
-                  width: 66,
-                  height: 66,
-                ),
-              ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.8),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Add Friends Button (Left)
-                      _buildNavButton(
-                        icon: Icons.person_add,
-                        onTap: () {
-                          _showAddFriendsModal(context);
-                        },
-                      ),
-
-                      // Right side buttons
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Stats Button
-                          _buildNavButton(
-                            icon: Icons.bar_chart,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const StatsPage(),
-                                ),
-                              );
-                            },
-                          ),
-                          const SizedBox(width: 15),
-
-                          // Shop Button
-                          _buildNavButton(
-                            icon: Icons.shopping_bag,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const ShopPage(),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-            );
-          },
-        );
-      },
+                ],
+              );
+            },
+          );
+        },
       ),
     );
+  }
+
+  Offset getPointOnFlutterPath(Path path, double t) {
+    final metrics = path.computeMetrics().toList();
+    if (metrics.isEmpty) return Offset.zero;
+    final metric = metrics.first;
+    final distance = metric.length * t;
+    return metric.getTangentForOffset(distance)?.position ?? Offset.zero;
   }
 
   Widget _buildNavButton({
@@ -351,17 +358,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       },
     );
   }
-}
-
-Offset getPointOnFlutterPath(Path path, double t) {
-  // t = 0.0 .. 1.0
-  final metrics = path.computeMetrics().toList();
-  if (metrics.isEmpty) return Offset.zero;
-
-  // Take the first metric (you have a single path)
-  final metric = metrics.first;
-  final distance = metric.length * t;
-  return metric.getTangentForOffset(distance)?.position ?? Offset.zero;
 }
 
 // Stats Page (Empty for now)
