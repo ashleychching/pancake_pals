@@ -23,3 +23,7 @@ flutter:
   assets:
     - assets/
     - assets/pancakeStack.png
+  fonts:
+    - family: ZCOOLKuaiLe
+      fonts:
+        - asset: fonts/ZCOOLKuaiLe-Regular.ttf
