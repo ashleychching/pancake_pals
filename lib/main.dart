@@ -31,17 +31,20 @@ List<Map<String, dynamic>> demoFriends = [
   {
     "name": "toastie",
     "tag": "4433",
-    "avatar": "assets/character-toast.png"
+    "avatar": "assets/character-toast.png",
+    "time": 40
   },
   {
     "name": "eggystan",
     "tag": "2211",
-    "avatar": "assets/character-egg.png"
+    "avatar": "assets/character-egg.png",
+    "time": 350
   },
   {
     "name": "wafflequeen",
     "tag": "9910",
-    "avatar": "assets/character-waffle.png"
+    "avatar": "assets/character-waffle.png",
+    "time": 600
   },
 ];
 
@@ -107,6 +110,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   )..repeat();
 
   late final Animation<double> _progress = Tween(begin: 0.0, end: 1.0).animate(_controller);
+
+  List<Map<String, dynamic>> addedFriends = [];
 
   Path? _toastPath;
 
@@ -333,6 +338,16 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                       height: 66,
                     ),
                   ),
+                  for (int i = 0; i < addedFriends.length; i++)
+                    Positioned(
+                      left: getPointOnFlutterPath(_toastPath!, (DateTime.now().hour * 60 + DateTime.now().minute - addedFriends[i]['time']) / 1440.0).dx,
+                      top: getPointOnFlutterPath(_toastPath!, (DateTime.now().hour * 60 + DateTime.now().minute - addedFriends[i]['time']) / 1440.0).dy,
+                      child: Image.asset(
+                        addedFriends[i]['avatar'],
+                        width: 50, // slightly smaller than main character
+                        height: 50,
+                      ),
+                    ),
                   Positioned(
                     left: 0,
                     right: 0,
@@ -556,7 +571,11 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                               right: 12,
                               top: 12,
                               child: GestureDetector(
-                                onTap: () => print("Added ${friend['name']}"),
+                                onTap: () {
+                                  setState(() {
+                                    addedFriends.add(friend);
+                                  });
+                                },
                                 child: Container(
                                   padding: const EdgeInsets.all(6),
                                   decoration: BoxDecoration(
