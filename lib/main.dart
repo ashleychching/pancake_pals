@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        fontFamily: 'ZCOOLKuaiLe',
       ),
       home: const MyHomePage(),
     );
@@ -494,7 +495,6 @@ class _StatsPageState extends State<StatsPage> {
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
-            fontFamily: 'monospace',
           ),
         ),
         elevation: 0,
