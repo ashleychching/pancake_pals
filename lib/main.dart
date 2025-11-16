@@ -565,7 +565,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                             ),
 
                             Positioned(
-                              right: 12,
+                              right: 6,
                               top: 12,
                               child: GestureDetector(
                                 onTap: () {
@@ -573,18 +573,11 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                     addedFriends.add(friend);
                                   });
                                 },
-                                child: Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8),
+                                child: Image.asset(
+                                    'assets/Add.png', // PNG file
+                                    width: 35,
+                                    height: 35,
                                   ),
-                                  child: const Icon(
-                                    Icons.person_add_alt_1,
-                                    size: 20,
-                                    color: Colors.black,
-                                  ),
-                                ),
                               ),
                             ),
                           ],
