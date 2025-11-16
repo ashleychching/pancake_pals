@@ -54,13 +54,20 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     List<UsageInfo> usage = await UsageStats.queryUsageStats(startOfDay, now);
 
-    int totalMillis = usage.fold<int>(
-      0,
-          (int sum, info) {
-        int time = ((info.totalTimeInForeground as num?)?.toInt() ?? 0);
-        return sum + time;
-      },
-    );
+    int totalMillis = 0;
+
+    for (var info in usage) {
+      final obj = info.totalTimeInForeground;
+      int time = 0;
+
+      if (obj != null) {
+        final str = obj.toString();
+        time = int.tryParse(str) ?? 0;
+      }
+
+      totalMillis += time;
+    }
+
 
     setState(() {
       _screenTime = Duration(milliseconds: totalMillis);
