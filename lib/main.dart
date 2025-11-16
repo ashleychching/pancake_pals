@@ -31,6 +31,58 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   Duration _screenTime = Duration.zero;
   bool _isLoading = true;
+  int currentPartnerIndex = 0;
+  int currentMapIndex = 0;
+
+  final List<Partner> partners = [
+    Partner(
+      imagePath: 'assets/character-toast.png',
+      name: 'Toastie',
+      description: 'Toastie is a hard-working and diligent piece of bread, always looking for the next condiment to spread.',
+      backgroundColor: const Color(0xFFFFF9E6),
+      accentColor: const Color(0xFFC8E6C9),
+    ),
+    Partner(
+      imagePath: 'assets/character-egg.png',
+      name: 'Eggy',
+      description: 'Bagel is a cheerful and round friend who loves rolling around and making everyone smile.',
+      backgroundColor: const Color(0xFFFFE5CC),
+      accentColor: const Color(0xFFB3E5FC),
+    ),
+    Partner(
+      imagePath: 'assets/character-strawberry.png',
+      name: 'Starry',
+      description: 'Croissant is elegant and flaky, always adding a touch of sophistication to any bakery.',
+      backgroundColor: const Color(0xFFFFF4E0),
+      accentColor: const Color(0xFFFFCCBC),
+    ),
+    Partner(
+      imagePath: 'assets/character-waffle.png',
+      name: 'Mr.Waffles',
+      description: 'Croissant is elegant and flaky, always adding a touch of sophistication to any bakery.',
+      backgroundColor: const Color(0xFFFFF4E0),
+      accentColor: const Color(0xFFFFCCBC),
+    ),
+  ];
+
+  final List<MapData> maps = [
+    MapData(
+      imagePath: 'assets/summer_path.png',
+      name: 'Summer Path',
+    ),
+    MapData(
+      imagePath: 'assets/winter_path.png',
+      name: 'Winter Path',
+    ),
+    MapData(
+      imagePath: 'assets/fall_path.png',
+      name: 'Autumn Path',
+    ),
+    MapData(
+      imagePath: 'assets/spring_path.png',
+      name: 'Spring Path',
+    ),
+  ];
 
   late final AnimationController _controller = AnimationController(
     vsync: this,
@@ -133,9 +185,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   Container(
                     width: double.infinity,
                     height: double.infinity,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage('assets/summer_path.png'),
+                        image: AssetImage(maps[currentMapIndex].imagePath),
                         fit: BoxFit.cover,
                         alignment: Alignment.center,
                       ),
@@ -196,7 +248,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     left: pos.dx, // center-ish horizontally
                     top: pos.dy,
                     child: Image.asset(
-                      'assets/toast_asset.png',
+                      partners[currentPartnerIndex].imagePath,
                       width: 66,
                       height: 66,
                     ),
@@ -243,13 +295,23 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                               // Shop Button
                               _buildNavButton(
                                 icon: Icons.shopping_bag,
-                                onTap: () {
-                                  Navigator.push(
+                                onTap: () async {
+                                  final result = await Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const ShopPage(),
+                                      builder: (context) => ShopPage(
+                                        initialPartnerIndex: currentPartnerIndex,
+                                        initialMapIndex: currentMapIndex,
+                                      ),
                                     ),
                                   );
+
+                                  if (result != null && result is Map<String, int>) {
+                                    setState(() {
+                                      currentPartnerIndex = result['partnerIndex'] ?? currentPartnerIndex;
+                                      currentMapIndex = result['mapIndex'] ?? currentMapIndex;
+                                    });
+                                  }
                                 },
                               ),
                             ],
@@ -335,7 +397,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                     ),
                     IconButton(
                       icon: const Icon(Icons.close, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        Navigator.pop(context, {
+                          'partnerIndex': currentPartnerIndex,
+                          'mapIndex': currentMapIndex,
+                        });
+                      },
                     ),
                   ],
                 ),
@@ -417,7 +484,14 @@ class StatsPage extends StatelessWidget {
 
 // Shop Page with Cycling
 class ShopPage extends StatefulWidget {
-  const ShopPage({super.key});
+  final int initialPartnerIndex;
+  final int initialMapIndex;
+
+  const ShopPage({
+    super.key,
+    this.initialPartnerIndex = 0,
+    this.initialMapIndex = 0,
+  });
 
   @override
   State<ShopPage> createState() => _ShopPageState();
@@ -426,6 +500,13 @@ class ShopPage extends StatefulWidget {
 class _ShopPageState extends State<ShopPage> {
   int currentPartnerIndex = 0;
   int currentMapIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    currentPartnerIndex = widget.initialPartnerIndex;
+    currentMapIndex = widget.initialMapIndex;
+  }
 
   final List<Partner> partners = [
     Partner(
@@ -436,15 +517,22 @@ class _ShopPageState extends State<ShopPage> {
       accentColor: const Color(0xFFC8E6C9),
     ),
     Partner(
-      imagePath: 'assets/character-bagel.png',
-      name: 'Bagel',
+      imagePath: 'assets/character-egg.png',
+      name: 'Eggy',
       description: 'Bagel is a cheerful and round friend who loves rolling around and making everyone smile.',
       backgroundColor: const Color(0xFFFFE5CC),
       accentColor: const Color(0xFFB3E5FC),
     ),
     Partner(
-      imagePath: 'assets/character-croissant.png',
-      name: 'Croissant',
+      imagePath: 'assets/character-strawberry.png',
+      name: 'Starry',
+      description: 'Croissant is elegant and flaky, always adding a touch of sophistication to any bakery.',
+      backgroundColor: const Color(0xFFFFF4E0),
+      accentColor: const Color(0xFFFFCCBC),
+    ),
+    Partner(
+      imagePath: 'assets/character-waffle.png',
+      name: 'Mr.Waffles',
       description: 'Croissant is elegant and flaky, always adding a touch of sophistication to any bakery.',
       backgroundColor: const Color(0xFFFFF4E0),
       accentColor: const Color(0xFFFFCCBC),
@@ -461,7 +549,11 @@ class _ShopPageState extends State<ShopPage> {
       name: 'Winter Path',
     ),
     MapData(
-      imagePath: 'assets/autumn_path.png',
+      imagePath: 'assets/fall_path.png',
+      name: 'Autumn Path',
+    ),
+    MapData(
+      imagePath: 'assets/spring_path.png',
       name: 'Autumn Path',
     ),
   ];
@@ -512,7 +604,12 @@ class _ShopPageState extends State<ShopPage> {
                   size: 20,
                 ),
               ),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                Navigator.pop(context, {
+                  'partnerIndex': currentPartnerIndex,
+                  'mapIndex': currentMapIndex,
+                });
+              },
             ),
           ),
         ],
