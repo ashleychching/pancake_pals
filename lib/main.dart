@@ -164,12 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   _buildNavButton(
                     icon: Icons.person_add,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AddFriendsPage(),
-                        ),
-                      );
+                      _showAddFriendsModal(context);
                     },
                   ),
 
@@ -230,31 +225,71 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-}
 
-// Add Friends Page (Empty for now)
-class AddFriendsPage extends StatelessWidget {
-  const AddFriendsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[900],
-      appBar: AppBar(
-        backgroundColor: Colors.black.withOpacity(0.8),
-        foregroundColor: Colors.white,
-        title: const Text('Add Friends'),
-        elevation: 0,
-      ),
-      body: const Center(
-        child: Text(
-          'Add Friends Page',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
+  void _showAddFriendsModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          decoration: BoxDecoration(
+            color: Colors.grey[900],
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
+            ),
           ),
-        ),
-      ),
+          child: Column(
+            children: [
+              // Handle bar
+              Container(
+                margin: const EdgeInsets.only(top: 12, bottom: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Title
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Add Friends',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+              // Content - Empty for now
+              Expanded(
+                child: Center(
+                  child: Text(
+                    'Add Friends Content Here',
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
