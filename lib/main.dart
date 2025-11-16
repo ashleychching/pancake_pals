@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       imagePath: 'assets/character-toast.png',
       name: 'Toastie',
       description: 'Toastie is a hard-working and diligent piece of bread, always looking for the next condiment to spread.',
-      backgroundColor: const Color(0xFFFFF9E6),
+      backgroundColor: const Color(0xFFBAD4AA),
       accentColor: const Color(0xFFC8E6C9),
     ),
     Partner(
@@ -81,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       imagePath: 'assets/character-waffle.png',
       name: 'Mr.Waffles',
       description: 'Croissant is elegant and flaky, always adding a touch of sophistication to any bakery.',
-      backgroundColor: const Color(0xFFFFF4E0),
+      backgroundColor: const Color(0xFFBAD4AA),
       accentColor: const Color(0xFFFFCCBC),
     ),
   ];
