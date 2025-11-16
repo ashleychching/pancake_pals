@@ -615,30 +615,529 @@ class MapData {
 }
 
 // Stats Page (Empty for now)
-class StatsPage extends StatelessWidget {
+class StatsPage extends StatefulWidget {
   const StatsPage({super.key});
+
+  @override
+  State<StatsPage> createState() => _StatsPageState();
+}
+
+class _StatsPageState extends State<StatsPage> {
+  int currentLeaderboardIndex = 0;
+  int currentStatsIndex = 0;
+
+  void nextLeaderboard() {
+    setState(() {
+      currentLeaderboardIndex = (currentLeaderboardIndex + 1) % 2;
+    });
+  }
+
+  void nextStats() {
+    setState(() {
+      currentStatsIndex = (currentStatsIndex + 1) % 2;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: const Color(0xFFE8E4D0),
       appBar: AppBar(
-        backgroundColor: Colors.black.withOpacity(0.8),
-        foregroundColor: Colors.white,
-        title: const Text('Stats'),
-        elevation: 0,
-      ),
-      body: const Center(
-        child: Text(
-          'Stats Page',
+        backgroundColor: const Color(0xFFE8E4D0),
+        foregroundColor: const Color(0xFF4A3428),
+        title: const Text(
+          'Pancake-ium',
           style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'monospace',
+          ),
+        ),
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: IconButton(
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF4A3428),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: Color(0xFFE8E4D0),
+                  size: 20,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Weekly Winner Section
+              const Text(
+                'Weekly Winner',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4A3428),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildLeaderboardCard(),
+              const SizedBox(height: 30),
+
+              // Stats Section
+              const Text(
+                'Stats',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4A3428),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildStatsCard(),
+            ],
           ),
         ),
       ),
     );
   }
+
+  Widget _buildLeaderboardCard() {
+    return Container(
+      height: 280,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF9E6),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: currentLeaderboardIndex == 0
+                ? _buildPodiumView()
+                : _buildListView(),
+          ),
+          Positioned(
+            right: 12,
+            bottom: 12,
+            child: GestureDetector(
+              onTap: nextLeaderboard,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.arrow_forward,
+                  color: Color(0xFF4A3428),
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _buildPodiumView() {
+    return SizedBox(
+      height: 468, // Total available height (500 - 32 padding)
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          // Large podium image at the bottom
+          Positioned(
+            bottom: 0,
+            child: Image.asset(
+              'assets/pancakeStack.png',
+              height: 200,
+              width: 250,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                print('Error loading pancake stack: $error');
+                return Container(
+                  height: 200,
+                  width: 270,
+                  color: const Color(0xFFD4A574),
+                  child: const Center(
+                    child: Text('Podium Image'),
+                  ),
+                );
+              },
+            ),
+          ),
+          // Characters positioned on the podium
+          Positioned(
+            bottom: 150,
+            left: 40,
+            child: _buildCharacterWithName(
+              name: 'EGGY',
+              character: 'assets/character-egg.png',
+              offsetY: 0,
+            ),
+          ),
+          Positioned(
+            bottom: 180,
+            child: _buildCharacterWithName(
+              name: 'TOASTYTOASTIE',
+              character: 'assets/character-toast.png',
+              offsetY: 0,
+              showCrown: true,
+            ),
+          ),
+          Positioned(
+            bottom: 120,
+            right: 40,
+            child: _buildCharacterWithName(
+              name: 'SARAH',
+              character: 'assets/character-strawberry.png',
+              offsetY: 0,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _buildCharacterWithName({
+    required String name,
+    required String character,
+    required double offsetY,
+    bool showCrown = false,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (showCrown)
+          const Text(
+            '👑',
+            style: TextStyle(fontSize: 16),
+          ),
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+          ),
+          child: ClipOval(
+            child: Image.asset(
+              character,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(Icons.person, size: 25);
+              },
+            ),
+          ),
+        ),
+        const SizedBox(height: 2),
+        SizedBox(
+          width: 70,
+          child: Text(
+            name,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 8,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4A3428),
+            ),
+          ),
+        ),
+        SizedBox(height: offsetY),
+      ],
+    );
+  }
+
+  Widget _buildListView() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildLeaderboardItem(1, 'TOASTYTOASTIE', '14 hrs 19 min', 'assets/character-toast.png', true),
+        const SizedBox(height: 8),
+        _buildLeaderboardItem(2, 'EGGY', '19 hrs 35 min', 'assets/character-egg.png', false),
+        const SizedBox(height: 8),
+        _buildLeaderboardItem(3, 'SARAH', '35 hrs 11 min', 'assets/character-strawberry.png', false),
+      ],
+    );
+  }
+
+  Widget _buildLeaderboardItem(int rank, String name, String time, String character, bool isWinner) {
+    return Row(
+      children: [
+        Text(
+          '$rank',
+          style: const TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF4A3428),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Container(
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+          ),
+          child: ClipOval(
+            child: Image.asset(
+              character,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(Icons.person, size: 30);
+              },
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4A3428),
+                    ),
+                  ),
+                  if (isWinner) const Text(' 👑', style: TextStyle(fontSize: 16)),
+                ],
+              ),
+              Text(
+                time,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF4A3428),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatsCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF9E6),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  currentStatsIndex == 0 ? 'Weekly' : 'Monthly',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF4A3428),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  height: 220,
+                  child: currentStatsIndex == 0
+                      ? _buildWeeklyChart()
+                      : _buildMonthlyChart(),
+                ),
+                const SizedBox(height: 40),
+              ],
+            ),
+          ),
+          Positioned(
+            right: 12,
+            bottom: 12,
+            child: GestureDetector(
+              onTap: nextStats,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.arrow_forward,
+                  color: Color(0xFF4A3428),
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWeeklyChart() {
+    final weekData = [
+      {'day': 'M', 'hours': 3.0},
+      {'day': 'T', 'hours': 2.5},
+      {'day': 'W', 'hours': 1.5},
+      {'day': 'T', 'hours': 5.0},
+      {'day': 'F', 'hours': 2.0},
+      {'day': 'S', 'hours': 5.5},
+      {'day': 'S', 'hours': 6.0},
+    ];
+
+    return _buildBarChart(weekData, const Color(0xFFC8E6C9));
+  }
+
+  Widget _buildMonthlyChart() {
+    final monthData = [
+      {'day': 'J', 'hours': 3.0},
+      {'day': 'F', 'hours': 2.5},
+      {'day': 'M', 'hours': 4.0},
+      {'day': 'A', 'hours': 3.5},
+      {'day': 'M', 'hours': 5.0},
+      {'day': 'J', 'hours': 4.5},
+      {'day': 'J', 'hours': 6.0},
+      {'day': 'A', 'hours': 5.0},
+      {'day': 'S', 'hours': 5.5},
+      {'day': 'O', 'hours': 3.5},
+      {'day': 'N', 'hours': 4.0},
+      {'day': 'D', 'hours': 6.5},
+    ];
+
+    return _buildBarChart(monthData, const Color(0xFFFFB74D));
+  }
+
+  Widget _buildBarChart(List<Map<String, dynamic>> data, Color barColor) {
+    final maxHours = 7.0;
+
+    return Stack(
+      children: [
+        // Y-axis labels and dotted lines
+        Positioned.fill(
+          child: Column(
+            children: [
+              for (int i = 7; i >= 1; i--)
+                Expanded(
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 35,
+                        child: Text(
+                          '$i hr',
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Color(0xFF4A3428),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: CustomPaint(
+                          painter: DottedLinePainter(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
+        // Bars on top of grid
+        Padding(
+          padding: const EdgeInsets.only(left: 35),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: data.map((item) {
+              final hours = item['hours'] as double;
+              final day = item['day'] as String;
+              final heightPercent = hours / maxHours;
+
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            width: double.infinity,
+                            height: 190 * heightPercent,
+                            decoration: BoxDecoration(
+                              color: barColor,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(4),
+                                topRight: Radius.circular(4),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        day,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF4A3428),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// Custom painter for dotted lines
+class DottedLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFF4A3428).withOpacity(0.3)
+      ..strokeWidth = 1;
+
+    const dashWidth = 4;
+    const dashSpace = 4;
+    double startX = 0;
+
+    while (startX < size.width) {
+      canvas.drawLine(
+        Offset(startX, size.height / 2),
+        Offset(startX + dashWidth, size.height / 2),
+        paint,
+      );
+      startX += dashWidth + dashSpace;
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
 // Shop Page with Cycling
