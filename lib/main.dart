@@ -157,6 +157,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     return '${hours} HR ${minutes} Min';
   }
 
+  double get timePercent {
+    final screenTime = _screenTime.inMinutes;
+    DateTime now = DateTime.now();
+    final dayTime = now.hour * 60 + now.minute;
+    return (dayTime - screenTime) / 1440.0;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -177,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               final size = MediaQuery
                   .of(context)
                   .size;
-              final pos = getPointOnFlutterPath(_toastPath!, _progress.value);
+              final pos = getPointOnFlutterPath(_toastPath!, timePercent);
 
 
               return Stack(
